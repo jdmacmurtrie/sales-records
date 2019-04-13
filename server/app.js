@@ -1,40 +1,52 @@
+const path = require("path");
+const express = require("express");
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const cors = require("cors");
+const errorHandler = require("errorhandler");
+const fs = require("fs");
+const csv = require("csv-parser");
 
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const cors = require('cors');
-const errorHandler = require('errorhandler');
-const mongoose = require('mongoose');
-
-mongoose.promise = global.Promise;
-
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
 
 app.use(cors());
-app.use(require('morgan')('dev'));
+app.use(require("morgan")("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'LightBlog', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "Sales Reports",
+    cookie: { maxAge: 60000 },
+    resave: false,
+    saveUninitialized: false
+  })
+);
 
 if (!isProduction) {
   app.use(errorHandler());
 }
 
-mongoose.connect('mongodb://localhost/lightblog');
-mongoose.set('debug', true);
+const results = [];
+fs.createReadStream(__dirname + "/Data.csv")
+  .pipe(csv())
+  .on("data", function(data) {
+    try {
+      results.push(data);
+    } catch (err) {
+      console.log("error ", err);
+    }
+  })
+  .on("end", function() {});
 
-// Add models
-require('./models/Articles');
-
-// Add routes
-app.use(require('./routes'));
+app.get("/api/data", (req, res, next) => {
+  res.send(results);
+});
 
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
+  const err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
@@ -46,8 +58,8 @@ if (!isProduction) {
     res.json({
       errors: {
         message: err.message,
-        error: err,
-      },
+        error: err
+      }
     });
   });
 }
@@ -58,9 +70,9 @@ app.use((err, req, res) => {
   res.json({
     errors: {
       message: err.message,
-      error: {},
-    },
+      error: {}
+    }
   });
 });
 
-const server = app.listen(8000, () => console.log('Server started on http://localhost:8000'));
+const server = app.listen(8000, () => console.log("Server started on http://localhost:8000"));
