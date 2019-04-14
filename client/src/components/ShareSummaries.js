@@ -2,10 +2,6 @@ import React from "react";
 import ReactTable from "react-table";
 
 export class ShareSummaries extends React.Component {
-  getInvestors() {
-    return [...new Set(this.props.allData.map(x => x.INVESTOR))];
-  }
-
   getAssetsSummaries() {
     return this.props.salesReps.map(rep => {
       const shares = this.getInvestorShares(rep);
@@ -23,8 +19,7 @@ export class ShareSummaries extends React.Component {
   }
 
   getInvestorShares(rep) {
-    const { allData } = this.props;
-    const investors = this.getInvestors();
+    const { allData, investors } = this.props;
     const repInvestorData = [];
     investors.forEach(investor => {
       const investorData = allData.filter(dataLine => dataLine.INVESTOR === investor);
@@ -52,8 +47,8 @@ export class ShareSummaries extends React.Component {
   }
 
   getColumns() {
-    const columns = this.getInvestors().length
-      ? this.getInvestors().map(investor => {
+    const columns = this.props.investors.length
+      ? this.props.investors.map(investor => {
           return {
             Header: investor,
             accessor: investor

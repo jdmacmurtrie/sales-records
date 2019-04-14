@@ -29,9 +29,51 @@ export class SalesSummaries extends React.Component {
         salesRep: rep,
         yearToDate: repSales.yearToDate,
         monthToDate: repSales.monthToDate,
-        quarterToDate: repSales.quarterToDate
+        quarterToDate: repSales.quarterToDate,
+        inceptionToDate: repSales.inceptionToDate
       };
     });
+  }
+
+  getRepSales(rep) {
+    let yearToDate = 0;
+    let monthToDate = 0;
+    let quarterToDate = 0;
+    let inceptionToDate = 0;
+    const repSalesData = this.props.allData.filter(
+      dataLine => dataLine.SALES_REP === rep && dataLine.TXN_TYPE === "SELL"
+    );
+
+    repSalesData.forEach(dataLine => {
+      yearToDate += this.checkWithinYear(dataLine);
+      monthToDate += this.checkWithinMonth(dataLine);
+      quarterToDate += this.checkWithinQuarter(dataLine);
+      inceptionToDate += dataLine.transactionTotal;
+    });
+
+    const currencyFormatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD"
+    });
+
+    return {
+      yearToDate: currencyFormatter.format(yearToDate),
+      monthToDate: currencyFormatter.format(monthToDate),
+      quarterToDate: currencyFormatter.format(quarterToDate),
+      inceptionToDate: currencyFormatter.format(inceptionToDate)
+    };
+  }
+
+  checkWithinYear(data) {
+    return data.TXN_DATE.getFullYear() === this.today.getFullYear() ? data.transactionTotal : 0;
+  }
+
+  checkWithinMonth(data) {
+    return data.TXN_DATE.getMonth() === this.today.getMonth() ? data.transactionTotal : 0;
+  }
+
+  checkWithinQuarter(data) {
+    return this.getSalesQuarter(data.TXN_DATE) === this.currentQuarter ? data.transactionTotal : 0;
   }
 
   getColumns() {
@@ -51,59 +93,22 @@ export class SalesSummaries extends React.Component {
       {
         Header: "Sales This Year",
         accessor: "yearToDate"
+      },
+      {
+        Header: "Sales Since Inception",
+        accessor: "inceptionToDate"
       }
     ];
   }
 
-  getRepSales(rep) {
-    let yearToDate = 0;
-    let monthToDate = 0;
-    let quarterToDate = 0;
-
-    this.props.allData.forEach(dataLine => {
-      if (dataLine.SALES_REP === rep && dataLine.TXN_TYPE === "SELL") {
-        yearToDate += this.checkWithinYear(dataLine);
-        monthToDate += this.checkWithinMonth(dataLine);
-        quarterToDate += this.checkWithinQuarter(dataLine);
-      }
-    });
-
-    const currencyFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    });
-
-    return {
-      yearToDate: currencyFormatter.format(yearToDate),
-      monthToDate: currencyFormatter.format(monthToDate),
-      quarterToDate: currencyFormatter.format(quarterToDate)
-    };
-  }
-
-  checkWithinYear(data) {
-    return data.TXN_DATE.getFullYear() === this.today.getFullYear() ? data.transactionTotal : 0;
-  }
-
-  checkWithinMonth(data) {
-    return data.TXN_DATE.getMonth() === this.today.getMonth() ? data.transactionTotal : 0;
-  }
-
-  checkWithinQuarter(data) {
-    return this.getSalesQuarter(data.TXN_DATE) === this.currentQuarter ? data.transactionTotal : 0;
-  }
-
   render() {
-    console.log("sales summaries", this.getSalesSummaries());
-
     return (
-      <div className="container">
-        <ReactTable
-          data={this.getSalesSummaries()}
-          columns={this.getColumns()}
-          defaultPageSize={5}
-          showPagination={false}
-        />
-      </div>
+      <ReactTable
+        data={this.getSalesSummaries()}
+        columns={this.getColumns()}
+        defaultPageSize={5}
+        showPagination={false}
+      />
     );
   }
 }

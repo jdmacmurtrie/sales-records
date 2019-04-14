@@ -1,13 +1,17 @@
 import React from "react";
-import { SalesSummaries } from "./salesSummaries";
-import { ShareSummaries } from "./shareSummaries";
+import { SalesSummaries } from "./components/SalesSummaries";
+import { ShareSummaries } from "./components/ShareSummaries";
+import { BreakReport } from "./components/BreakReport";
+import { InvestorProfit } from "./components/InvestorProfit";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       allData: [],
-      salesReps: []
+      salesReps: [],
+      investors: [],
+      funds: []
     };
   }
 
@@ -31,7 +35,9 @@ class App extends React.Component {
         });
         console.log("Data:", parsedData);
         const salesReps = [...new Set(data.map(x => x.SALES_REP))];
-        this.setState({ salesReps, allData: parsedData });
+        const investors = [...new Set(data.map(x => x.INVESTOR))];
+        const funds = [...new Set(data.map(x => x.FUND))];
+        this.setState({ investors, salesReps, funds, allData: parsedData });
       })
       .catch(err => {
         console.log("errors", err);
@@ -43,6 +49,8 @@ class App extends React.Component {
       <div className="container">
         <SalesSummaries {...this.state} />
         <ShareSummaries {...this.state} />
+        <BreakReport {...this.state} />
+        <InvestorProfit {...this.state} />
       </div>
     );
   }
