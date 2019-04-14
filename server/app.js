@@ -29,12 +29,12 @@ if (!isProduction) {
   app.use(errorHandler());
 }
 
-const results = [];
-fs.createReadStream(__dirname + "/Data.csv")
+const data = [];
+fs.createReadStream(__dirname + "/data.csv")
   .pipe(csv())
-  .on("data", function(data) {
+  .on("data", function(row) {
     try {
-      results.push(data);
+      data.push(row);
     } catch (err) {
       console.log("error ", err);
     }
@@ -42,7 +42,7 @@ fs.createReadStream(__dirname + "/Data.csv")
   .on("end", function() {});
 
 app.get("/api/data", (req, res, next) => {
-  res.send(results);
+  res.send(data);
 });
 
 app.use((req, res, next) => {
