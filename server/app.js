@@ -31,7 +31,11 @@ if (!isProduction) {
 
 const data = [];
 fs.createReadStream(__dirname + "/data.csv")
-  .pipe(csv())
+  .pipe(
+    csv({
+      mapValues: ({ header, index, value }) => value.replace(/\r?\n|\r/g, " ")
+    })
+  )
   .on("data", function(row) {
     try {
       data.push(row);
