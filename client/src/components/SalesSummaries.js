@@ -1,10 +1,7 @@
 import React from "react";
 import ReactTable from "react-table";
-
-const firstQuarter = [1, 2, 3];
-const secondQuarter = [4, 5, 6];
-const thirdQuarter = [7, 8, 9];
-
+import { currencyFormatter } from "../constants";
+import { firstQuarter, secondQuarter, thirdQuarter } from "../constants";
 export class SalesSummaries extends React.Component {
   constructor(props) {
     super(props);
@@ -27,10 +24,7 @@ export class SalesSummaries extends React.Component {
       const repSales = this.getRepSales(rep);
       return {
         salesRep: rep,
-        yearToDate: repSales.yearToDate,
-        monthToDate: repSales.monthToDate,
-        quarterToDate: repSales.quarterToDate,
-        inceptionToDate: repSales.inceptionToDate
+        ...repSales
       };
     });
   }
@@ -49,11 +43,6 @@ export class SalesSummaries extends React.Component {
       monthToDate += this.checkWithinMonth(dataLine);
       quarterToDate += this.checkWithinQuarter(dataLine);
       inceptionToDate += dataLine.transactionTotal;
-    });
-
-    const currencyFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
     });
 
     return {

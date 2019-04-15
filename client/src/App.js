@@ -33,7 +33,6 @@ class App extends React.Component {
             transactionTotal: +dataLine.TXN_SHARES * +dataLine.TXN_PRICE.replace("$", "")
           };
         });
-        console.log("Data:", parsedData);
         const salesReps = [...new Set(data.map(x => x.SALES_REP))];
         const investors = [...new Set(data.map(x => x.INVESTOR))];
         const funds = [...new Set(data.map(x => x.FUND))];
@@ -47,10 +46,23 @@ class App extends React.Component {
   render() {
     return (
       <div className="container">
-        <SalesSummaries {...this.state} />
-        <ShareSummaries {...this.state} />
-        <BreakReport {...this.state} />
-        <InvestorProfit {...this.state} />
+        <h1>Investment Summaries</h1>
+        <div className="table-display">
+          <h3>Sales Summary</h3>
+          <SalesSummaries {...this.state} />
+        </div>
+        <div className="table-display">
+          <h3>Assets Under Management Summary</h3>
+          <ShareSummaries {...this.state} />
+        </div>
+        <div className="table-display">
+          <h3>Break Report</h3>
+          <BreakReport {...this.state} />
+        </div>
+        <div className="table-display">
+          <h3>Investor Profit</h3>
+          <InvestorProfit {...this.state} />
+        </div>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import React from "react";
 import ReactTable from "react-table";
+import { currencyFormatter } from "../constants";
 
 export class BreakReport extends React.Component {
   getBreakData() {
@@ -42,11 +43,6 @@ export class BreakReport extends React.Component {
         netAmount -= dataLine.transactionTotal;
       }
     });
-    const currencyFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    });
-
     return Math.sign(netAmount) === 1 ? "No Error" : currencyFormatter.format(netAmount);
   }
 

@@ -1,14 +1,11 @@
 import React from "react";
 import ReactTable from "react-table";
+import { currencyFormatter } from "../constants";
 
 export class InvestorProfit extends React.Component {
   getProfitData() {
     return this.props.investors.map(investor => {
       const net = this.findNet(investor);
-      const currencyFormatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD"
-      });
 
       const tableData = { investor };
       net.forEach(n =>
