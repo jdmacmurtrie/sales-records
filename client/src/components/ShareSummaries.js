@@ -8,7 +8,7 @@ export class ShareSummaries extends React.Component {
       const tableData = {};
       shares.map(share => {
         Object.assign(tableData, {
-          [share.investor]: share.assets
+          [share.investor.substring(0, 16)]: share.assets
         });
       });
       return {
@@ -51,7 +51,7 @@ export class ShareSummaries extends React.Component {
       ? this.props.investors.map(investor => {
           return {
             Header: investor,
-            accessor: investor
+            accessor: investor.substring(0, 16)
           };
         })
       : [];
