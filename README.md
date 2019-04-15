@@ -27,7 +27,8 @@ To run locally:
 ```sh
 cd server
 node app.js
-cd ../client
+--- new tab ---
+cd client
 npm start
 ```
 
