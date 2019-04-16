@@ -8,6 +8,7 @@ export class ShareSummaries extends React.Component {
       const tableData = {};
       shares.map(share => {
         Object.assign(tableData, {
+          // table would not accept more than 17 characters as key (quick fix)
           [share.investor.substring(0, 16)]: share.assets
         });
       });
@@ -35,6 +36,7 @@ export class ShareSummaries extends React.Component {
   calculateAssets(data, rep) {
     let total = 0;
     data.forEach(dataLine => {
+      // need to match both sales rep and investor
       if (dataLine.SALES_REP === rep) {
         if (dataLine.TXN_TYPE === "BUY") {
           total += dataLine.TXN_SHARES;

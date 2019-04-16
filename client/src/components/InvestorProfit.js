@@ -1,9 +1,11 @@
 import React from "react";
 import ReactTable from "react-table";
 import { currencyFormatter } from "../constants";
+import { calculateTransactionTotal } from "../utils";
 
 export class InvestorProfit extends React.Component {
   getProfitData() {
+    // find the net loss/profit for each investor first, then for each fund
     return this.props.investors.map(investor => {
       const net = this.findNet(investor);
 
@@ -21,17 +23,11 @@ export class InvestorProfit extends React.Component {
 
   findNet(investor) {
     return this.props.funds.map(fund => {
-      let total = 0;
+      // find fund and investor specific data
       const investorFundData = this.props.allData.filter(
         dataLine => dataLine.INVESTOR === investor && dataLine.FUND === fund
       );
-      investorFundData.forEach(dataLine => {
-        if (dataLine.TXN_TYPE === "BUY") {
-          total += dataLine.transactionTotal;
-        } else {
-          total -= dataLine.transactionTotal;
-        }
-      });
+      const total = calculateTransactionTotal(investorFundData);
       return { fund, total };
     });
   }

@@ -3,6 +3,7 @@ import { SalesSummaries } from "./components/SalesSummaries";
 import { ShareSummaries } from "./components/ShareSummaries";
 import { BreakReport } from "./components/BreakReport";
 import { InvestorProfit } from "./components/InvestorProfit";
+import { titleCase } from "./utils";
 
 class App extends React.Component {
   constructor(props) {
@@ -24,18 +25,22 @@ class App extends React.Component {
         return response.json();
       })
       .then(data => {
+        // Massage data to be more calculation friendly.
+        // It will be converted back to readable before getting displayed.
         const parsedData = data.map(dataLine => {
           return {
             ...dataLine,
             TXN_DATE: new Date(dataLine["TXN_DATE"]),
             TXN_PRICE: dataLine.TXN_PRICE.replace("$", ""),
             TXN_SHARES: +dataLine.TXN_SHARES,
+            FUND: titleCase(dataLine.FUND),
             transactionTotal: +dataLine.TXN_SHARES * +dataLine.TXN_PRICE.replace("$", "")
           };
         });
+        // extract subdata sets from data to be used later
         const salesReps = [...new Set(data.map(x => x.SALES_REP))];
         const investors = [...new Set(data.map(x => x.INVESTOR))];
-        const funds = [...new Set(data.map(x => x.FUND))];
+        const funds = [...new Set(data.map(x => titleCase(x.FUND)))];
         this.setState({ investors, salesReps, funds, allData: parsedData });
       })
       .catch(err => {

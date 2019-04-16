@@ -1,15 +1,16 @@
 import React from "react";
 import ReactTable from "react-table";
 import { currencyFormatter } from "../constants";
+import { calculateTransactionTotal } from "../utils";
 
 export class BreakReport extends React.Component {
   getBreakData() {
+    // loop through each investor to find errors for thier numbers
     return this.props.investors.map(investor => {
       const errors = this.findErrors(investor);
       return {
         investor,
-        shareErrors: errors.shareErrors,
-        cashErrors: errors.cashErrors
+        ...errors
       };
     });
   }
@@ -31,18 +32,12 @@ export class BreakReport extends React.Component {
         totalShares -= dataLine.TXN_SHARES;
       }
     });
+    // if the number is positive, no error.  Otherwise return the erroneous amount.
     return Math.sign(totalShares) === 1 ? "No Error" : totalShares;
   }
 
   findCashErrors(data) {
-    let netAmount = 0;
-    data.forEach(dataLine => {
-      if (dataLine.TXN_TYPE === "BUY") {
-        netAmount += dataLine.transactionTotal;
-      } else {
-        netAmount -= dataLine.transactionTotal;
-      }
-    });
+    const netAmount = calculateTransactionTotal(data);
     return Math.sign(netAmount) === 1 ? "No Error" : currencyFormatter.format(netAmount);
   }
 

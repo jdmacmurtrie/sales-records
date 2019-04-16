@@ -5,7 +5,7 @@ import { firstQuarter, secondQuarter, thirdQuarter } from "../constants";
 export class SalesSummaries extends React.Component {
   constructor(props) {
     super(props);
-    this.today = new Date("4/18/18");
+    this.today = new Date("4/18/18"); // for the purposes of the exercise
     this.currentQuarter = this.getSalesQuarter(this.today);
   }
 
@@ -20,6 +20,7 @@ export class SalesSummaries extends React.Component {
   }
 
   getSalesSummaries() {
+    // find each sales rep specific sales and calculate them
     return this.props.salesReps.map(rep => {
       const repSales = this.getRepSales(rep);
       return {
@@ -42,7 +43,7 @@ export class SalesSummaries extends React.Component {
       yearToDate += this.checkWithinYear(dataLine);
       monthToDate += this.checkWithinMonth(dataLine);
       quarterToDate += this.checkWithinQuarter(dataLine);
-      inceptionToDate += dataLine.transactionTotal;
+      inceptionToDate += dataLine.transactionTotal; // salesman from inception is total amount sold from first sale
     });
 
     return {
@@ -53,8 +54,9 @@ export class SalesSummaries extends React.Component {
     };
   }
 
+  // check if the transaction date year/month/quarter is the same as today's year/month/quarter.
   checkWithinYear(data) {
-    return data.TXN_DATE.getFullYear() === this.today.getFullYear() ? data.transactionTotal : 0;
+        return data.TXN_DATE.getFullYear() === this.today.getFullYear() ? data.transactionTotal : 0;
   }
 
   checkWithinMonth(data) {
